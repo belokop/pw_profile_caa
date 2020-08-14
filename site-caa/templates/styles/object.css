@@ -1,0 +1,56 @@
+#see_also {
+	clear: both; 
+}
+
+ul.object_images {
+	float: left; 
+	margin: 0 20px 20px 0;
+}
+	ul.object_images li {
+		display: block;
+		margin: 0 0 20px 0;
+		width: 300px;
+		background: #000;
+	}
+
+	ul.object_images li p {
+		position: relative; 
+		margin: 0;
+	}
+	ul.object_images li img {
+		display: block;
+		margin: 0; 
+	}
+
+	ul.object_images li p span {
+		position: absolute; 
+		bottom: 0;
+		left: 0; 
+		display: block;
+		width: 286px; 
+		font: 11px/13px Arial, sans-serif;
+		color: #fff; 
+		background: #000; 
+		opacity: 0.7; 
+		padding: 5px 7px; 
+	
+	}
+
+#bodycopy {
+	width: 300px; 
+	float: left; 
+}
+
+table.object_data {
+	width: 320px; 
+}
+	table.object_data th,
+	table.object_data td {
+		border-bottom: 1px dotted #ccc; 
+		vertical-align: top; 
+	}
+	table.object_data td {
+	}
+	table.object_data td ul {
+		margin: 0; 
+	}
