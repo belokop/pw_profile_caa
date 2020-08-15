@@ -1,3 +1,17 @@
+#prp_selector{
+  position: relative;
+  top: -1em;
+  font-size: smaller;
+}
+#prp_selector ul{
+  vertical-align: center;
+}
+#prp_selector li{
+  float:left;
+  list-style-type: none;
+  margin: 0.3em ! important;
+}
+
 .prp_serial,
 .prp_publisher,
 .prp_title{
@@ -5,9 +19,10 @@
 }
 
 .prp_serial{
-   background: transparent;
-   text-align: left !important; 
-   white-space: nowrap !important; 
+    vertical-align: top;
+    background: transparent !important;
+    text-align: left !important; 
+    white-space: nowrap !important; 
 }
 
 .prp_authors{
@@ -22,3 +37,7 @@
    color: darkgrey !important;
    text-decoration: line-through ! important;
 }
+
+tr:nth-child(even) {background: #CCC}
+tr:nth-child(odd)  {background: #FFF}
+
