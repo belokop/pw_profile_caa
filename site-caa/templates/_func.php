@@ -157,37 +157,46 @@ function renderObjectListSort($template_name='artwork') {
 }
 
 /**
- * Render a list of objects
+ * Render a list of pages
  *
- * @param PageArray $objects Objects to render
+ * @param PageArray $pages Objects to render
  * @param bool $showPagination Whether pagination links should be shown
  * @param string $headline
  * @return string The rendered markup
  *
  */
-function renderObjectList(PageArray $objects, $cols=1, $showPagination=true, $headline='') {
+function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $headline='') {
 
-        if (!count($objects)) return;
+        if (!count($pages)) return;
 	$pagination = '';
 	$sortSelect = '';
 	$items = array();
-	
-	if($showPagination && $objects->count()) {
-	  $headline = $objects->getPaginationString('Objects'); // i.e. Objects 1-10 of 500
-	  $pagination = renderPagination($objects); // pagination links
-	  $sortSelect = renderObjectListSort($objects->first->template->name);
+
+	// includes name
+	if (!is_numeric($cols)){
+	  $list_include = $cols;
+	  $showPagination = false;
+	  $cols = 1;
+	}else{
+	  $list_include = 'object-list.php';
 	}
 
-	foreach($objects as $object) {
-	  $items[] = renderObjectListItem($object);
+	if($showPagination && $pages->count()) {
+	  $headline = $pages->getPaginationString('Objects'); // i.e. Objects 1-10 of 500
+	  $pagination = renderPagination($pages); // pagination links
+	  $sortSelect = renderObjectListSort($pages->first->template->name);
 	}
 
-	$selector = (string) $objects->getSelectors();
+	foreach($pages as $object) {
+	  $items[] = renderObjectListItem($object, $list_include);
+	}
+
+	$selector = (string) $pages->getSelectors();
 	//if($selector) $selector = makePrettySelector($selector);
 	
 	$out = files()->render('./includes/object-list.php',
 			       array('cols'   => $cols,
-				     'objects' => $objects,
+				     'pages' => $pages,
 				     'headline' => $headline,
 				     'items' => $items,
 				     'pagination' => $pagination,
@@ -205,7 +214,7 @@ function renderObjectList(PageArray $objects, $cols=1, $showPagination=true, $he
  * @return string
  *
  */
-function renderObjectListItem(Page $page) {
+function renderObjectListItem(Page $page, $list_include='object-list-item.php') {
   
   /** @var Pageimages $images */
   $images = $page->get('images');
@@ -238,8 +247,8 @@ function renderObjectListItem(Page $page) {
   }
   if (empty($caption) && !empty($page->parent)) $caption = $page->parent->get("title");
   
-  $out = files()->render('./includes/object-list-item.php',
-			 array('object' => $page,
+  $out = files()->render("./includes/$list_include", // object-list-item.php
+			 array('page' => $page,
 			       'img' => $img,
 			       'caption' => @$caption,
 			       'summary' => summarizeText(strip_tags($page->get('body')), 100)

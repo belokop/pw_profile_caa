@@ -2,8 +2,8 @@
 /**
  * Variables:
  *   $page
- *   $objects     Related objects, the first image of those is drawn as page images (with links to the original)
- *   $objectname  Some text 
+ *   $pages     Related pages, the first image of those is drawn as page images (with links to the original)
+ *   $pages_heading  Some text 
  *   $related     Artworks that mention the same title in their body
  *   $width       Image(s) width
  *   $o           images on the right (default left)
@@ -15,13 +15,13 @@ if(empty($authors)) $authors = array();
 if(empty($related) || empty($related->id)) $related = array();
 if (empty($o)) $o = 'L'; // images on the left (if not on the rigth) hand site
 
-foreach(array('page','authors','objects','objectname','related','width','f_author') as $g){if(!isset($$g)) $$g=''; $GLOBALS[$g] = $$g;}
+foreach(array('page','authors','pages','pages_heading','related','width','f_author') as $g){if(!isset($$g)) $$g=''; $GLOBALS[$g] = $$g;}
 
 function o_p_images($c='1-3'){
-  global $page, $objects, $width;
+  global $page, $pages, $width;
 
   echo "<div class='object-images uk-width-medium-$c uk-text-center'>\n";
-  foreach((empty($objects) ? [$page] : $objects) as $object){
+  foreach((empty($pages) ? [$page] : $pages) as $object){
     if(!empty($images=$object->get('images'))){
       foreach($images as $image){
 	$thumb = $image->width($width);
@@ -30,7 +30,7 @@ function o_p_images($c='1-3'){
 		 x("img src='$thumb->url' alt='$image->description'")).
 	       ($image->description ? x("div class='caption uk-text-small uk-text-muted'",
 					x("span",$image->description)) : ""));
-	if (!empty($objects)) break;
+	if (!empty($pages)) break;
       }
     }else{
       echo x("div class='object-image uk-margin-small'",
@@ -50,7 +50,7 @@ function o_p_tr_line($label,$items){
 }
 
 function o_p_main($c='2-3'){
-  global $page, $authors, $object, $objectname, $related,$f_author;
+  global $page, $authors, $object, $pages_heading, $related,$f_author;
   
   $search_url = getSearchURL($page);
   echo"  <div class='uk-width-medium-$c'>\n";
@@ -80,7 +80,7 @@ function o_p_main($c='2-3'){
   /*
   // (Extra) object
   if (!empty($object)){
-    echo x("h2",$objectname);
+    echo x("h2",$pages_heading);
     foreach($object as $item){
       echo x("li",x("a href='$item->url'",$item->title.','.$item->parent->title));
     }
