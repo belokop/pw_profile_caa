@@ -124,47 +124,5 @@ case PRP_OK:
   $t['class'] = $t_classes;
 }
 
-//
-// What is done only once - page header
-//
-if (!@$GLOBALS[__FILE__]++){
-
-  $rec['url'] = $page->url;
-  foreach($page->fields as $f) $rec[$f->name] = $page->$f;
-  //echo"<pre>rec\n";print_r($rec);echo"</pre>";
-  echo"<pre>header\n";print_r(prp_header());echo"</pre>";
-  echo"<pre>rec\n";print_r($rec);echo"</pre>";
-  //echo"<pre>";print_r($input);echo"</pre>";
-
-  $action = '/caa/prp_spot/';
-
-  foreach(['all'=> 'All preprints',
-	   'AP' => 'Astrophysics',
-	   'CM' => 'Condensed Matter',
-	   'HE' => 'High Energy Physics'] as $k=>$v) $options_g[] = x("option value='$k'".(@$_POST['prp_field']==$k?" selected='selected'":""),$v);
-  for($y=date('Y'); $y>1994; $y--) $options_y[] = x("option value='$y'".(@$_POST['prp_year']==$y?" selected='selected'":""),$y);
-
-  echo(x("div id='prp_selector'",
-	 x("ul",
-	   x("li",
-	     x("form action='$action' method='POST' enctype='application/x-www-form-urlencoded' class='only_online' name='selector1' accept-charset='UTF-8'",
-	       x("select name='prp_field' onchange='submit()' class='shadow-box'",join("",$options_g)))).
-	   x("li",
-	     x("form action='$action' method='POST' enctype='application/x-www-form-urlencoded' class='only_online' name='selector2' accept-charset='UTF-8'",
-	       x("select name='prp_year'  onchange='submit()' class='shadow-box'",join("",$options_y)))))).
-       x("div style='clear:both'"));
-
-  // Print table header
-  echo "<table>\n";
-  $th = ''; foreach(prp_header() as $k=>$v) $th .= x("th class='".(empty($c=@$t['th_attr'][$k])?"":join(' ',$c))."'",$v);
-  echo x("tr",$th);
-  /*
-  echo "<table>\n".x("tr",
-		     x("th").x("th").
-		     x("th",'Title and author(s)').
-		     x("th",'Published in'));
-  */
-}
-
 $td = ''; foreach(prp_header() as $k=>$v) $td .= x("td class='$k'",$rec[$k]);
 echo x("tr",$td);

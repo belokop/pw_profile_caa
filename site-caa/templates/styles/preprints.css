@@ -12,6 +12,10 @@
   margin: 0.3em ! important;
 }
 
+.prp_year,
+.prp_field{
+    font-size:x-large;
+}
 .prp_serial,
 .prp_publisher,
 .prp_title{

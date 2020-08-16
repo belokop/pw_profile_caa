@@ -160,6 +160,7 @@ function renderObjectListSort($template_name='artwork') {
  * Render a list of pages
  *
  * @param PageArray $pages Objects to render
+ * @param string $cols Number of columns OR (if not numeric) context
  * @param bool $showPagination Whether pagination links should be shown
  * @param string $headline
  * @return string The rendered markup
@@ -174,11 +175,11 @@ function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $head
 
 	// includes name
 	if (!is_numeric($cols)){
-	  $list_include = $cols;
+	  $context = $cols;
 	  $showPagination = false;
 	  $cols = 1;
 	}else{
-	  $list_include = 'object-list.php';
+	  $context = 'object';
 	}
 
 	if($showPagination && $pages->count()) {
@@ -188,16 +189,17 @@ function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $head
 	}
 
 	foreach($pages as $object) {
-	  $items[] = renderObjectListItem($object, $list_include);
+	  $items[] = renderObjectListItem($object, $context);
 	}
 
 	$selector = (string) $pages->getSelectors();
 	//if($selector) $selector = makePrettySelector($selector);
 	
-	$out = files()->render('./includes/object-list.php',
-			       array('cols'   => $cols,
-				     'pages' => $pages,
-				     'headline' => $headline,
+	$out = files()->render("./includes/${context}-list.php",
+			       array('context'=> $context,
+				     'cols'   => $cols,
+				     'pages'  => $pages,
+				     'headline'=> $headline,
 				     'items' => $items,
 				     'pagination' => $pagination,
 				     'sortSelect' => $sortSelect,
@@ -214,7 +216,7 @@ function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $head
  * @return string
  *
  */
-function renderObjectListItem(Page $page, $list_include='object-list-item.php') {
+function renderObjectListItem(Page $page, $context='object'){
   
   /** @var Pageimages $images */
   $images = $page->get('images');
@@ -247,9 +249,9 @@ function renderObjectListItem(Page $page, $list_include='object-list-item.php') 
   }
   if (empty($caption) && !empty($page->parent)) $caption = $page->parent->get("title");
   
-  $out = files()->render("./includes/$list_include", // object-list-item.php
+  $out = files()->render("./includes/${context}-list-item.php", // say, object-list-item.php
 			 array('page' => $page,
-			       'img' => $img,
+			       'img'  => $img,
 			       'caption' => @$caption,
 			       'summary' => summarizeText(strip_tags($page->get('body')), 100)
 			       ));
