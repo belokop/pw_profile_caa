@@ -1,7 +1,6 @@
 <?php namespace ProcessWire;
 
-if (!defined('PRP_censor_here')) define('PRP_censor_here',true); 
-if (!defined('page_is_writable')) define('page_is_writable',PRP_censor_here); // "true" if owner or censor
+if (!defined('record_is_writable')) define('record_is_writable',$user->hasRole('preprints_censor')); // "true" if owner or censor
 
 if (!defined('myOrg_name'))  define('myOrg_name','Nordita');
 if (!defined('PRP_OK'))      define('PRP_OK'          , 'ok');
@@ -14,23 +13,26 @@ if (function_exists("date_default_timezone_set") and
 
 $GLOBALS['page'] = $page;
 $GLOBALS['doing'] = $doing = 'list'; // managing
-$GLOBALS['t']['class'] = [];
+global $t;
+$t['class'] = [];
+$t['th_attr'] = [];
 
 $u = explode('/',$page->url); array_pop($u); array_pop($u);
 $same_url = join('/',$u)."/?$_SERVER[QUERY_STRING]";
-$icons_url= '/';
+$icons_url= '/assets/files/';
 
 if (!function_exists('ProcessWire\prp_header')){
+  global $user, $t, $doing;
   function prp_header(){
-    $header = array('prp_serial' => ' ');
-    if ($GLOBALS["doing"] == 'managing'){
-      if (PRP_censor_here)    $header['prp_avid']  = 'Entered by';
+    $header = ['prp_serial' => ' '];
+    if ($doing == 'managing'){
+      if ($user->hasRole('preprints_censor'))    $header['prp_avid']  = 'Entered by';
       $header['prp_field']  = 'Field';
     }
     $header['_preprint']   = 'Title and author(s)';
     $header['prp_publisher']  = 'Published in';
     if (@$_POST['prp_field'] != 'all') unset($header['prp_field']);
-    $GLOBALS['t']['th_attr']['prp_publisher'] = ['style="width:25%;"'];
+    $t['th_attr']['prp_publisher'] = ['style="width:25%;"'];
     return $header;
   }
 }
@@ -111,11 +113,11 @@ case PRP_RESERVED:
 					     ? $rec['prp_day0']
 					     : $rec['prp_tm']));
 
-  if (page_is_writable){
+  if (record_is_writable){
     $id = (empty($page->prp_id) ? $page->id : $page->prp_id);
-    if (PRP_censor_here) $t['extraTD'][]=x("a href='$same_url?prp_accept_once=$id' ".
-					   " 'onClick='return confirm(\"Really accept?\");'",
-					   "<img src='$icons_url/i-ok.png' alt='accept' />");
+    if ($user->hasRole('preprints_censor')) $t['extraTD'][]=x("a href='$same_url?prp_accept_once=$id' ".
+							      " 'onClick='return confirm(\"Really accept?\");'",
+							      "<img src='$icons_url/i-ok.png' alt='accept' />");
     
     $t['extraTD'][]=x("a href='$same_url?prp_delete_once=$id' onClick='return confirm(\"Really delete?\");'",
 		    "<img src='$icons_url/i-drop.png' alt='drop' />");

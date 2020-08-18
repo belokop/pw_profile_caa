@@ -179,7 +179,7 @@ function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $head
 	  $showPagination = false;
 	  $cols = 1;
 	}else{
-	  $context = 'object';
+	  $context = 'ul';
 	}
 
 	if($showPagination && $pages->count()) {
@@ -216,7 +216,7 @@ function renderObjectList(PageArray $pages, $cols=1, $showPagination=true, $head
  * @return string
  *
  */
-function renderObjectListItem(Page $page, $context='object'){
+function renderObjectListItem(Page $page, $context='ul'){
   
   /** @var Pageimages $images */
   $images = $page->get('images');
