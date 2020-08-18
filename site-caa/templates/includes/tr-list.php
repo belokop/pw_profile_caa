@@ -14,7 +14,7 @@
 <?php if(!empty($items)): ?>
 
 <!--	<div class='object-list'>   -->
-        <table>
+        <table id='tr_list'>
 		<?php foreach($items as $item): ?>
 			<li><?=$item?></li>
 		<?php endforeach; ?>
