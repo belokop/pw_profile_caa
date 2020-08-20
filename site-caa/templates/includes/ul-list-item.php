@@ -1,8 +1,8 @@
 <?php namespace ProcessWire;
-$url = $object->url;
-$ttl = $object->title;
+$url = $page->url;
+$ttl = $page->title;
 $taggedFields = '';
-foreach(getTaggedFields($object,'list') as $f=>$i) $taggedFields = $taggedFields . x("div class='uk-width-1-3 uk-width-small-1-5'",$i['value']."<br/>" .
+foreach(getTaggedFields($page,'list') as $f=>$i) $taggedFields = $taggedFields . x("div class='uk-width-1-3 uk-width-small-1-5'",$i['value']."<br/>" .
 										     x("small class='uk-text-muted'",$i['label']));
 echo x("div class='object-list-item' style='margin-bottom:15px'",
        x("div class='uk-grid uk-grid-medium'",

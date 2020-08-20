@@ -415,49 +415,6 @@ function getTaggedFields($page,$context='page'){
 /**
  *
  */
-function t_dump($object,$title="tidy_dump",$options=array()){
-  $substr    = (is_numeric($options) ? $options : 0);
-  $max_level = (empty($options['l']) ? 0 :  $options['l']);
-  $print     = true;
-  ob_start(); var_dump($object); $dump=ob_get_contents(); ob_end_clean();
-  if ($title === 'get_object_name'){
-    $t = array('/object.ProcessWire.([A-Za-z]*)..(\d*).*/'=> '$1',
-	       '/string\([0-9]*\) /'                      => '',
-	       '/\n.*/'                                   => '');
-  }else{
-    $t = array('/\}/'                  => ')',
-	       '/\{/'                  => '(',
-	       '/\"/'                  => '',
-	       '/\(\n *\)/'            => '()',
-	       '/=>\n */'              => '=>',
-	       '/=>string\([0-9]*\) /' => '=>',
-	       '/=>int.(\d*). ?/'      => '=>$1',
-	       '/=>array\(([0-9]*)\) /'=>'=>array',
-	       '/\[\d*\]=>/'           =>'',
-	       '/object.ProcessWire.([A-Za-z]*)..(\d*)[^\(]*\([^\(]*/'=> '$1.$2',
-	       '/\n *([A-Za-z0-9]*)\n */'    => ',$1,',
-	       '/\(,([A-Za-z,0-9]*)\n *\)/'  => '($1)',
-	       '/\(,([A-Za-z,0-9]*),\)/'     => '($1)',
-	       );
-  }
-  $reply = preg_replace(array_keys($t),array_values($t),$dump);
-  if ($title === 'get_object_name') return "Object $reply";
-  if ($max_level > 0){
-    $t = array('/\n'.str_repeat('  ',$max_level+1).'[^\n]*/' => '',
-	       '/\(\n'.str_repeat('  ',$max_level).'\)/'     => '( ... )',
-	       );
-    $reply = preg_replace(array_keys($t),array_values($t),$reply);
-  }
-  //  $reply = "$title\n".$reply;
-  if ($print) printf("\n%s%s\n",
-		     preg_replace("/ProcessWire./","",$title),
-		     str_replace("\n","\n          ","\n".$reply));
-  return $reply;
-}
-
-/**
- *
- */
 function _fData($data,$maxLength=66){
 
   static $tp = array("/\n/"          => '',
@@ -494,4 +451,58 @@ function _fData($data,$maxLength=66){
   }else{
     return 'UNKNOWN TYPE '. var_export($data,True);
   }
+}
+
+/**
+ */
+function t_dump($object,$title="t_dump",$options=array()){
+  $substr    = (is_numeric($options) ? $options : 0);
+  $max_level = (empty($options['l']) ? 0 :  $options['l']);
+  $print     = true;
+  ob_start(); var_dump($object); $dump=ob_get_contents(); ob_end_clean();
+  if ($title === 'get_object_name'){
+    $t = array('/object.ProcessWire.([A-Za-z]*)..(\d*).*/'=> '$1',
+	       '/string\([0-9]*\) /'                      => '',
+	       '/\n.*/'                                   => '');
+  }else{
+    $t = array('/\}/'                  => ')',
+	       '/\{/'                  => '(',
+	       '/\"/'                  => '',
+	       '/\n *array\(\d*\) */'  => "\n",
+	       '/\(\n *\)/'            => '()',
+	       '/=>\n */'              => '=>',
+	       '/=>string\([0-9]*\) /' => '=>',
+	       '/=>int.(\d*). ?/'      => '=>$1',
+	       '/=>array\([0-9]*\) /'=>'=>array',
+	     //'/\[\d*\]=>/'           =>'',       // array indexes
+	       '/\n[^=]*=.NULL/'       =>'',
+	       '/object.ProcessWire.([A-Za-z]*)..(\d*)[^\(]*\([^\(]*/'=> '$1.$2',
+	       '/[\[\]]/'              => '',
+	     //'/\n *([^\n]*)\n */'    => ',$1,',
+	     //'/\(,([^\n]*)\n *\)/'   => '($1)',
+	     //'/\(,([^,]*),\)/'       => '($1)',
+	       '/^array\(\d*\) *?/'    => '',
+	       '/ \(\n *([^\)]*)\)/'   => ' '.'[$1]',
+	       '/\n *\)/'              =>     ']',
+	       '/\(/'                  => '[',
+	       '/\[\n *([^\]]*)\]/'    => '[$1]',
+	       '/( *)(\[[^\[]*\[)([^\n]*\[)/' => '$1$2'."\n    ".'$3', //  [class=>[prp_serial=>[
+	       '/\[\n *([^\]]*)\]/'    => '[$1]',
+	       );
+  }
+  $reply = preg_replace(array_keys($t),array_values($t),$dump);
+  if ($title === 'get_object_name') return (empty($substr) ? $reply : substr($reply,0,$substr));
+  if ($title === 'get_object_name') return "Object $reply";
+  if ($title === '')                return $reply;
+  if ($max_level > 0){
+    $t = array('/\n'.str_repeat('  ',$max_level+1).'[^\n]*/' => '',
+	       '/\(\n'.str_repeat('  ',$max_level).'\)/'     => '( ... )',
+	       );
+    $reply = preg_replace(array_keys($t),array_values($t),$reply);
+  }
+  //  $reply = "$title\n".$reply;
+  if ($print) printf("<pre>\n%s%s</pre>\n",
+		     preg_replace("/ProcessWire./","",$title),
+		     str_replace("\n","\n          ","\n".$reply));
+  return $reply;
 }

@@ -28,14 +28,7 @@
 .tr_odd {background: #DDD} 
 .tr_even{background: #EEE} 
 
-/*
-.prp_year,
-.prp_field{
-    font-size:x-large;
-}
-*/
 .prp_serial,
-.prp_publisher,
 .prp_title{
    font-weight: bold;
 }
@@ -45,6 +38,10 @@
     text-align: left !important; 
     white-space: nowrap !important; 
     margin-right:20px;
+}
+
+.prp_publisher{
+    width:25%;
 }
 
 .prp_authors{

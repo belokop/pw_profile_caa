@@ -11,28 +11,21 @@ if (!defined('PRP_TEXT_reserve'))define('PRP_TEXT_reserve', 'reserve new preprin
 if (function_exists("date_default_timezone_set") and
     function_exists("date_default_timezone_get"))  @date_default_timezone_set(@date_default_timezone_get());
 
+$GLOBALS['doing'] =  'list'; // managing
 $GLOBALS['page'] = $page;
-$GLOBALS['doing'] = $doing = 'list'; // managing
-global $t;
-$t['class'] = [];
-$t['th_attr'] = [];
-
-$u = explode('/',$page->url); array_pop($u); array_pop($u);
-$same_url = join('/',$u)."/?$_SERVER[QUERY_STRING]";
-$icons_url= '/assets/files/';
+global $page, $doing;
 
 if (!function_exists('ProcessWire\prp_header')){
-  global $user, $t, $doing;
+  global $user;
   function prp_header(){
     $header = ['prp_serial' => ' '];
-    if ($doing == 'managing'){
+    if ($GLOBALS['doing'] == 'managing'){
       if ($user->hasRole('preprints_censor'))    $header['prp_avid']  = 'Entered by';
       $header['prp_field']  = 'Field';
     }
     $header['_preprint']   = 'Title and author(s)';
     $header['prp_publisher']  = 'Published in';
     if (@$_POST['prp_field'] != 'all') unset($header['prp_field']);
-    $t['th_attr']['prp_publisher'] = ['style="width:25%;"'];
     return $header;
   }
 }
@@ -77,10 +70,14 @@ if (!function_exists('ProcessWire\prp_href')){
   }
 }
 
+$t = [];
+foreach(prp_header() as $k=>$v) $t['class'][$k][] = $k;
+
+$u = explode('/',$page->url); array_pop($u); array_pop($u);
+$same_url = join('/',$u)."/?$_SERVER[QUERY_STRING]";
+$icons_url= '/assets/files/';
+
 foreach($page->fields as $f) $rec[$f->name] = $GLOBALS['rec'][$f->name] = $page->$f;
-$t['class'] = ['prp_serial' => ['prp_serial']];
-//$t_classes = ['prp_serial' => ['prp_serial']];
-//foreach($t_classes as $k=>$v) $t['class'][$k][] = $v;
 
 if (!empty($rec['prp_person'])) $rec['prp_avid'] = $page->prp_person->title;
 
@@ -112,7 +109,6 @@ case PRP_RESERVED:
   $rec['prp_avid'] .= '<br/>'.date(' Y-m-d',(empty($rec['prp_tm'])
 					     ? $rec['prp_day0']
 					     : $rec['prp_tm']));
-
   if (record_is_writable){
     $id = (empty($page->prp_id) ? $page->id : $page->prp_id);
     if ($user->hasRole('preprints_censor')) $t['extraTD'][]=x("a href='$same_url?prp_accept_once=$id' ".
@@ -123,19 +119,16 @@ case PRP_RESERVED:
 		    "<img src='$icons_url/i-drop.png' alt='drop' />");
   }
   break;
-  
 case PRP_CANCELED:
   foreach(prp_header() as $k=>$v) $t['class'][$k][] = 'prp_canceled';
   $t['extraTD'][] = "<img src='$icons_url/i-drop2.png' alt='canceled' />";
   break;
-  
 case PRP_OK:
-  //  $t['class'] = $t_classes;
 }
 
 // Print table header
 if (!@$GLOBALS[__FILE__]++){
-  $th = ''; foreach(prp_header() as $k=>$v) $th .= x("th class='".(empty($c=@$t['th_attr'][$k])?"":join(' ',$c))."'",$v);
+  $th = ''; foreach(prp_header() as $k=>$v) $th .= x("th",$v);
   echo x("tr",$th);
 }
 
@@ -144,7 +137,7 @@ $c = @$GLOBALS[basename(__FILE__)]++;
 $td = '';
 foreach(prp_header() as $k=>$v){
   if (in_array($k,['prp_publisher','_preprint','prp_field','prp_avid'])) $t['class'][$k][] = (empty($c%2)?'tr_odd':'tr_even');
-  $td .= x("td class='".join(' ',$t['class'][$k])."'",$rec[$k]);
+  $td .= x("td class=".x("'",join(' ',$t['class'][$k])),$rec[$k]);
 }
 if(!empty($t['extraTD'])) foreach($t['extraTD'] as $i) $td .= x("td style=''",$i);
 echo x("tr",$td);

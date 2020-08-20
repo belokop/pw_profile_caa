@@ -1,22 +1,5 @@
 <?php namespace ProcessWire;
 
-$GLOBALS["doing"] = 'list';
-
-if (!function_exists('ProcessWire\prp_header')){
-  function prp_header(){
-    $header = array('prp_serial' => ' ');
-    if ($GLOBALS["doing"] == 'managing'){
-      if (PRP_censor_here)    $header['prp_avid']  = 'Entered by';
-      $header['prp_field']  = 'Field';
-    }
-    $header['_preprint']   = 'Title and author(s)';
-    $header['prp_publisher']  = 'Published in';
-    if (@$_SESSION['prp_field'] != 'all') unset($header['prp_field']);
-    $GLOBALS['t']['th_attr']['prp_publisher'] = ['style="width:25%;"'];
-    return $header;
-  }
-}
-
 $action = '/caa/prp_spot/';
 
 $options_y = [x("option value='all'".(@$_SESSION['prp_year']=='all'?" selected='selected'":""),'All years')];
