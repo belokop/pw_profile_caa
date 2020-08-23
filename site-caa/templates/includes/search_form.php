@@ -1,19 +1,15 @@
 <?php namespace ProcessWire;
 
-//foreach(pages()->find("children.count>0") as $p) if(!in_array($p->name,array('home','artworks'))) $ssearchable[] = $p->template->name;
 $searchable = array('collection','seller','brand','person','possession');
 
-//list($spot_url,$spot_prfx) = getSpotURLs($page);
-$GLOBALS['spot_url'] = $spot_url;
-
 function collect($name){
-  global $input, $spot_url;
+  global $input, $SPOT_url;
   $reply = array();
-  foreach(pages()->get($n="/${spot_url}${name}s/")->children() as $item) {
+  foreach(pages()->get($n="/${SPOT_url}${name}s/")->children() as $item) {
     $selected = ($item->name == @$input->whitelist->$name ? " selected=' selected' " : '');
     $reply[] = x("option$selected value='".$item->name."'",$item->title);
   }
-  print "$name $n<br>";
+  // print "$name $n<br>";
   return $reply;
 }
 
@@ -30,7 +26,7 @@ function show_collect($name,$select){
 		join("\n",$select))))));
 }
 
-$to_show=array(); foreach($searchable as $item)  $to_show[] = show_collect($spot_prfx.$item,collect($spot_prfx.$item));
+$to_show=array(); foreach($searchable as $item)  $to_show[] = show_collect("${SPOT_id}_${item}",collect("${SPOT_id}_${item}"));
 
 $cs = (empty($input)
        ? ""
@@ -39,7 +35,7 @@ $cs = (empty($input)
 echo x("div id='artwork-search' class='uk-panel uk-panel-box xuk-panel-box-primary uk-margin-bottom'",
        x("div id='artwork-search' class='uk-panel uk-panel-box xuk-panel-box-primary uk-margin-bottom'",
 	 x("h3 class='uk-panel-title'", x("i class='uk-icon-paint-brush'")."Artwork Search").
-	 x(sprintf("form class='uk-form uk-form-stacked' method='get' action='%s${spot_url}${spot_prfx}search/'",$config->urls->root),
+	 x(sprintf("form class='uk-form uk-form-stacked' method='get' action='%s${SPOT_url}${SPOT_id}_search/'",$config->urls->root),
 	   x("div class='uk-form-row'",
 	     x("label class='uk-form-label' for='search_keywords'","Keywords").
 	     x("div class='uk-form-controls'",

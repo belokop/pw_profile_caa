@@ -21,8 +21,8 @@ function o_p_images($c='1-3'){
   global $page, $pages, $width;
 
   echo "<div class='object-images uk-width-medium-$c uk-text-center'>\n";
-  foreach((empty($pages) ? [$page] : $pages) as $object){
-    if(!empty($images=$object->get('images'))){
+  foreach((empty($pages) ? [$page] : $pages) as $p){
+    if(!empty($images=$p->get('images'))){
       foreach($images as $image){
 	$thumb = $image->width($width);
 	echo x("div class='object-image uk-margin-small'",
@@ -50,9 +50,8 @@ function o_p_tr_line($label,$items){
 }
 
 function o_p_main($c='2-3'){
-  global $page, $authors, $object, $pages_heading, $related,$f_author;
+  global $page, $authors, $object, $pages_heading, $related,$f_author, $SPOT_search;
   
-  $search_url = getSearchURL($page);
   echo"  <div class='uk-width-medium-$c'>\n";
   
   if (!empty($taggedFields=getTaggedFields($page,'page')) || !empty($authors)){
@@ -75,8 +74,9 @@ function o_p_main($c='2-3'){
   //
   // body
   //
-  if (!empty($page->body)) echo x("h2",__("About")." ".$page->title).$page->body;
-
+  echo x("h2",$page->title);
+  if (!empty($page->body)) echo $page->body;
+  
   /*
   // (Extra) object
   if (!empty($object)){
