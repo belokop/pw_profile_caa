@@ -361,30 +361,25 @@ function summarizeText($text, $maxLength = 500) {
 /**
  *
  */
-function getSpotURLs(Page $page){
+function getSpotURLs(){
+  global $SPOT_id, $SPOT_url, $SPOT_search;
   // Are we in the sub-site?
-  preg_match(";(/[^/]*home)?(/(\w*)spot/);",$page->url,$url_match);
-  $reply = (empty($url_match[0])
-	    ? (strpos($page->url,'/h_')===0
-	       ? array('','h')
-	       : array('',''))
-	    : array(substr($url_match[0],1), $url_match[3]));
-  return $reply;
-}
-
-/**
- */
-function getSearchURL($page){
-  list($spot_url,$spot_prfx) = getSpotURLs($page);
-  $search_url = config('urls')->root . $spot_url . $spot_prfx . "search/";
-  // print "search_url=$search_url<br>";
-  return $search_url;
+  $uri = $_SERVER['REQUEST_URI'];
+  preg_match(";(/[^/]*home)?(/([a-z]*)_?spot/);",$uri,$url_match);
+  list($SPOT_url,$SPOT_id) = (empty($url_match[0])
+                              ? (strpos($uri,'/h_')
+                                 ? array('','h')
+                                 : array('',''))
+                              : array(substr($url_match[0],1), $url_match[3]));
+  $SPOT_search = config('urls')->root . $SPOT_url . $SPOT_id . "_search/";
+  if (!@$GLOBALS[__function__]++) echo str_replace('</pre><pre>', '; ', _formatData($uri)._formatData($url_match)._formatData("$SPOT_id, $SPOT_url, $SPOT_search"));
 }
 
 /**
  *
  */
 function getTaggedFields($page,$context='page'){
+  global $SPOT_search;
   $reply = WireArray();
   if (!empty($page) && !empty($page->fields)){
     foreach ($page->fields as $f) {
@@ -405,104 +400,9 @@ function getTaggedFields($page,$context='page'){
       $reply->add(array('field' => $f->name,
 			'label' => $page->getField($f->name)->getLabel(),
 			'value' => (is_numeric($value)?$value:$value),
-			'url'   => sprintf("%s?%s=%s",getSearchURL($page),$f->name,$value),
+			'url'   => sprintf("%s?%s=%s",$SPOT_search,$f->name,$value),
 			'comment'=> "<!-- $f_name  ------------------------------------>\n"));
     }
   }
-  return $reply;
-}
-
-/**
- *
- */
-function _fData($data,$maxLength=66){
-
-  static $tp = array("/\n/"          => '',
-		     "/ => /"        => '=>',
-		     "/ *\( */"      => '(',
-		     "/ *\) */"      => ')',
-		     "/[\s]+/"       => ' ',
-		     "/ *\[\d*\]=>/" => ',',
-		     "/ *\[0\]=>/"   => '',
-		     "/\(,/"         => '(',
-		     "/\)\[/"        => '),[',
-					    "/ProcessWire./"=> '');
-  static $ts = array("\n"            => '',
-		     " => "          => '=>');
-
-  if (is_array($data)){
-      ob_start();    print_r($data);    $output = ob_get_contents();    ob_end_clean();
-      return substr(preg_replace(array_keys($tp),array_values($tp),$output),0,$maxLength);
-  }elseif($data instanceof NullPage){
-    return "Object NullPage";
-  }elseif(is_object($data)){
-    if (!empty($data->name)) return $data->name;
-    return t_dump($data,'get_object_name');
-  }elseif(is_bool($data)){
-    return var_export($data,True);
-  }elseif(is_string($data)){
-    return substr($data,0,$maxLength);
-    return '(string) '.substr($data,0,$maxLength);
-  }elseif(is_numeric($data)){
-    return $data;
-    return "(numeric) $data";
-  }elseif (is_null($data)){
-    return 'NULL';
-  }else{
-    return 'UNKNOWN TYPE '. var_export($data,True);
-  }
-}
-
-/**
- */
-function t_dump($object,$title="t_dump",$options=array()){
-  $substr    = (is_numeric($options) ? $options : 0);
-  $max_level = (empty($options['l']) ? 0 :  $options['l']);
-  $print     = true;
-  ob_start(); var_dump($object); $dump=ob_get_contents(); ob_end_clean();
-  if ($title === 'get_object_name'){
-    $t = array('/object.ProcessWire.([A-Za-z]*)..(\d*).*/'=> '$1',
-	       '/string\([0-9]*\) /'                      => '',
-	       '/\n.*/'                                   => '');
-  }else{
-    $t = array('/\}/'                  => ')',
-	       '/\{/'                  => '(',
-	       '/\"/'                  => '',
-	       '/\n *array\(\d*\) */'  => "\n",
-	       '/\(\n *\)/'            => '()',
-	       '/=>\n */'              => '=>',
-	       '/=>string\([0-9]*\) /' => '=>',
-	       '/=>int.(\d*). ?/'      => '=>$1',
-	       '/=>array\([0-9]*\) /'=>'=>array',
-	     //'/\[\d*\]=>/'           =>'',       // array indexes
-	       '/\n[^=]*=.NULL/'       =>'',
-	       '/object.ProcessWire.([A-Za-z]*)..(\d*)[^\(]*\([^\(]*/'=> '$1.$2',
-	       '/[\[\]]/'              => '',
-	     //'/\n *([^\n]*)\n */'    => ',$1,',
-	     //'/\(,([^\n]*)\n *\)/'   => '($1)',
-	     //'/\(,([^,]*),\)/'       => '($1)',
-	       '/^array\(\d*\) *?/'    => '',
-	       '/ \(\n *([^\)]*)\)/'   => ' '.'[$1]',
-	       '/\n *\)/'              =>     ']',
-	       '/\(/'                  => '[',
-	       '/\[\n *([^\]]*)\]/'    => '[$1]',
-	       '/( *)(\[[^\[]*\[)([^\n]*\[)/' => '$1$2'."\n    ".'$3', //  [class=>[prp_serial=>[
-	       '/\[\n *([^\]]*)\]/'    => '[$1]',
-	       );
-  }
-  $reply = preg_replace(array_keys($t),array_values($t),$dump);
-  if ($title === 'get_object_name') return (empty($substr) ? $reply : substr($reply,0,$substr));
-  if ($title === 'get_object_name') return "Object $reply";
-  if ($title === '')                return $reply;
-  if ($max_level > 0){
-    $t = array('/\n'.str_repeat('  ',$max_level+1).'[^\n]*/' => '',
-	       '/\(\n'.str_repeat('  ',$max_level).'\)/'     => '( ... )',
-	       );
-    $reply = preg_replace(array_keys($t),array_values($t),$reply);
-  }
-  //  $reply = "$title\n".$reply;
-  if ($print) printf("<pre>\n%s%s</pre>\n",
-		     preg_replace("/ProcessWire./","",$title),
-		     str_replace("\n","\n          ","\n".$reply));
   return $reply;
 }

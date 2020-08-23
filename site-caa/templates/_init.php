@@ -9,7 +9,8 @@
  *
  */
 
-include_once("./_func.php");  // shared functions
+include_once("./_func.php");   // shared functions
+include_once("./_debug.php");  // debug functions
 
 /***************************************************************************************
  * DEFINE REGIONS

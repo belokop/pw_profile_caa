@@ -22,7 +22,7 @@
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:400,400i,700' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/uikit.gradient.min.css' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/components/slidenav.gradient.min.css' />
-    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/preprints.css' /> -->
+    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/preprints.css' />
     <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/objects.css' />
 <?php
           // Are we in the spot?
@@ -47,7 +47,6 @@
           include("./includes/google-analytics.php");
 ?>
   </head>
-  
   <body>
     <div id='masthead' class='uk-margin-large-top uk-margin-bottom'>
       <div id='primary-headline' class='uk-container uk-container-center uk-margin-bottom'>
@@ -127,18 +126,17 @@
 	</div>
       </div>
     </div> <!--/main-->
-    
+
+<!--	
     <footer id='foot' class='uk-margin-large-top'>
       <div class='uk-container uk-container-center uk-margin-bottom'>
 	<div class='uk-text-muted uk-text-center'>
-<!--
-	  <span class='foot-text'>Powered by <a href='https://processwire.com'>ProcessWire Open Source CMS</a></span>
-	  <span class='foot-line uk-text-small'>Data and photos from Wikipedia and Freebase</span>
--->
+	  <span class='foot-text'>Powered by <a href='https://processwire.com'>ProcessWire Open Source CMS</a></span> 
 	</div>
       </div>
     </footer>
-    
+-->    
+
     <?php include("./includes/offcanvas.php"); ?>
     
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
