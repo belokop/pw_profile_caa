@@ -54,6 +54,8 @@ function o_p_main($c='2-3'){
   
   echo"  <div class='uk-width-medium-$c'>\n";
   
+  echo x("h2",$page->title);
+
   if (!empty($taggedFields=getTaggedFields($page,'page')) || !empty($authors)){
     echo "<table class='uk-table object-info'> <tbody>\n";
 
@@ -74,7 +76,6 @@ function o_p_main($c='2-3'){
   //
   // body
   //
-  echo x("h2",$page->title);
   if (!empty($page->body)) echo $page->body;
   
   /*

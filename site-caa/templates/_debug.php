@@ -1,6 +1,6 @@
 <?php namespace ProcessWire;
 
-if (!function_exists('ProcessWire\tidy_dump')){
+if (!function_exists('ProcessWire\tidy_dump') && !function_exists('tidy_dump')){
   function tidy_dump($object,$title="tidy_dump",$options=array()){
     $substr    = (is_numeric($options) ? $options : 0);
     $max_level = (empty($options['l']) ? 0 :  $options['l']);

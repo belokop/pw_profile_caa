@@ -22,13 +22,13 @@
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:400,400i,700' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/uikit.gradient.min.css' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/components/slidenav.gradient.min.css' />
-    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/preprints.css' />
+<!--    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/main.css' /> -->
     <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/objects.css' />
 <?php
           // Are we in the spot?
-          list($spot_url,$spot_prfx) = getSpotURLs($page);
+          getSpotURLs();
           $home = pages("/");
-          $spot_home = pages("/$spot_url");
+          $spot_home = pages("/$GLOBALS[SPOT_url]");
 
           // Are we in the search page?
           $in_search = (strpos($page->url,'search/') !== false);
@@ -47,6 +47,7 @@
           include("./includes/google-analytics.php");
 ?>
   </head>
+  
   <body>
     <div id='masthead' class='uk-margin-large-top uk-margin-bottom'>
       <div id='primary-headline' class='uk-container uk-container-center uk-margin-bottom'>
@@ -60,12 +61,11 @@
 
         <ul class='uk-navbar-nav' style='float:right;'>
 	  <?php	   // Search and login
-	include './includes/search_form_short.php';
-        echo
-	(user()->isGuest() 
-	 ? x("li",x("a href='{$config->urls->admin}login/'",x("i class='uk-icon-user'")        .' '.__('Login')))
-	 : (page()->editable() ? x("li",x("a href='$page->editUrl'",x("i class='uk-icon-edit'").' '.__('Edit'))) : "").
-	 x("li",x("a href='{$config->urls->admin}login/logout/'"),  x("i class='uk-icon-user'").' '.__('Logout')));
+	    include './includes/search_form_short.php';
+            echo (user()->isGuest() 
+		  ? x("li",x("a href='{$config->urls->admin}login/'",x("i class='uk-icon-user'")        .' '.__('Login')))
+		  : (page()->editable() ? x("li",x("a href='$page->editUrl'",x("i class='uk-icon-edit'").' '.__('Edit'))) : "").
+		  x("li",x("a href='{$config->urls->admin}login/logout/'"),  x("i class='uk-icon-user'").' '.__('Logout')));
 ?>
         </ul>
       </div>
@@ -74,9 +74,9 @@
 	<div class='uk-container uk-container-center'>
 	  <ul class='uk-navbar-nav float_left'>
 <?php
-	    foreach(($spot_url ? $spot_home->and($spot_home->children) : $home->and($home->children)) as $item) {
+	    foreach(($GLOBALS['SPOT_url'] ? $spot_home->and($spot_home->children) : $home->and($home->children)) as $item) {
 	       if (preg_match(";(countries|search)/;",$item->url) || empty($item->numChildren)) continue;
-	       if (preg_match(";(spot)/;",$item->url) && !$spot_url)  continue;
+	       if (preg_match(";(spot)/;",$item->url) && !$GLOBALS['SPOT_url'])  continue;
 	       $class = ($item->id==$page->rootParent->id || $item->id==$page->parent->id ? 'uk-active' : '');
 	       echo "\t\t<li class='$class'><a href='$item->url'>$item->title</a></li>\n";
 	    }
@@ -117,7 +117,7 @@
 	    if ($in_search) {
 	      echo "<div id='sidebar' class='uk-width-large-1-4'>\n";
 	      echo region('sidebarHeader');
-	      include("./includes/search_form.php");
+	      // include("./includes/search_form.php");
 	      echo region('sidebar');
 	      include("./includes/sidebar-links.php");
 	      echo "</div>\n";
@@ -126,17 +126,17 @@
 	</div>
       </div>
     </div> <!--/main-->
-
-<!--	
+    
     <footer id='foot' class='uk-margin-large-top'>
       <div class='uk-container uk-container-center uk-margin-bottom'>
 	<div class='uk-text-muted uk-text-center'>
-	  <span class='foot-text'>Powered by <a href='https://processwire.com'>ProcessWire Open Source CMS</a></span> 
+<!--
+	  <span class='foot-text'>Powered by <a href='https://processwire.com'>ProcessWire Open Source CMS</a></span>
+-->
 	</div>
       </div>
     </footer>
--->    
-
+    
     <?php include("./includes/offcanvas.php"); ?>
     
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
