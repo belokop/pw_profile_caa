@@ -25,7 +25,7 @@ if ($keywords=@$_GET['keywords']){
 region('browserTitle', $page->title);
 region('content',
        (empty($keywords) ? files()->render('./includes/prp-list-selector.php') : "").
-       renderObjectList(findObjects($selector,'preprint',$limit=9999),
+       renderObjectList(findObjects($selector,'prp_preprint',$limit=9999),
 			$context='tr',
 			$showPagination=true,
 			$headline=$headline));

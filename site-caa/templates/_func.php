@@ -384,22 +384,25 @@ function getTaggedFields($page,$context='page'){
   if (!empty($page) && !empty($page->fields)){
     foreach ($page->fields as $f) {
       $f_name = $f->name;
-      if(!$f->hasTag($context)) continue;
+      if(!$f->hasTag($context))         continue;
+      if(empty($v=$page->get($f_name))) continue;
       if ($f->type instanceof FieldtypeOptions){
-       	if (!count($page->$f_name)) continue;
-	$value = $page->$f_name->last->getTitle(); 
+	if (!count($v)) continue;
+	$value = $v->last->getTitle();
+    //}elseif ($f->type instanceof FieldtypeURL){
+    //  $value = x("a href='$v'",$v);
       }elseif ($f->type instanceof FieldtypeDatetime){
-	$value = date("Y-m-d",$page->get($f_name));
+	$value = date("Y-m-d",(int)$v);
       }elseif (strpos($f->name,'price')){
-	$value = number_format($page->get($f_name),0,","," ").' SEK';
+	$value = number_format($v,0,","," ").' SEK';
       }else{
-	$value = $page->get($f_name);
+	$value = $v;
       }
-      if (empty($value)) continue;
+      if (empty(trim($value))) continue;
       // printf("%s=%s %s <br>\n",$f_name,$value,t_dump($page->$f_name,'get_object_name'));
       $reply->add(array('field' => $f->name,
 			'label' => $page->getField($f->name)->getLabel(),
-			'value' => (is_numeric($value)?$value:$value),
+			'value' => $value,
 			'url'   => sprintf("%s?%s=%s",$SPOT_search,$f->name,$value),
 			'comment'=> "<!-- $f_name  ------------------------------------>\n"));
     }

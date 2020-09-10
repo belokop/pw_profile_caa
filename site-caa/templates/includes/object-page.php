@@ -21,7 +21,7 @@ function o_p_images($c='1-3'){
   global $page, $pages, $width;
 
   echo "<div class='object-images uk-width-medium-$c uk-text-center'>\n";
-  foreach((empty($pages) ? [$page] : $pages) as $p){
+  foreach((empty($pages->id) ? [$page] : $pages) as $p){
     if(!empty($images=$p->get('images'))){
       foreach($images as $image){
 	$thumb = $image->width($width);

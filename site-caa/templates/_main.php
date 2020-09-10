@@ -22,8 +22,8 @@
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:400,400i,700' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/uikit.gradient.min.css' />
     <link rel='stylesheet' type='text/css' href='<?=$config->urls->root?>site/uikit/css/components/slidenav.gradient.min.css' />
-<!--    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/main.css' /> -->
     <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/objects.css' />
+    <link rel='stylesheet' type='text/css' href='<?=urls('templates')?>styles/preprints.css' />
 <?php
           // Are we in the spot?
           getSpotURLs();
